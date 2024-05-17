@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RuleXpress</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="mt-5">RuleXpress</h1>
+    <p>Type: Rule-based tool</p>
+    <p>Cost: Paid</p>
+    <p>Description: RuleXpress is a rule management system that facilitates the creation, maintenance, and execution of business rules. It offers a graphical interface for defining rules and their relationships, making it suitable for developing rule-based expert systems.</p>
+
+    <hr>
+
+    <h2 class="mt-4">Rule Input</h2>
+    <form id="ruleForm">
+      <div class="form-group">
+        <label for="ruleInput">Enter Rule:</label>
+        <input type="text" class="form-control" id="ruleInput" placeholder="Enter rule here">
+      </div>
+      <div class="form-group">
+        <label for="ruleRelationship">Rule Relationship:</label>
+        <select class="form-control" id="ruleRelationship">
+          <option value="independent">Independent</option>
+          <option value="dependent">Dependent</option>
+          <option value="precedence">Precedence</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit Rule</button>
+    </form>
+
+    <hr>
+
+    <h2 class="mt-4">Rules</h2>
+    <ul id="ruleList"></ul>
+
+    <button id="executeRulesBtn" class="btn btn-success mt-3">Execute Rules</button>
+
+    <hr>
+
+    <h2 class="mt-4">User Authentication</h2>
+    <button id="loginBtn" class="btn btn-primary">Login</button>
+    <button id="logoutBtn" class="btn btn-danger d-none">Logout</button>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+    function saveRulesToLocalStorage() {
+      var rules = [];
+      $('#ruleList li').each(function() {
+        rules.push({
+          rule: $(this).find('.ruleText').text().trim(),
+          relationship: $(this).find('.ruleRelationship').text().trim()
+        });
+      });
+      localStorage.setItem('rules', JSON.stringify(rules));
+    }
+    function loadRulesFromLocalStorage() {
+      var rules = JSON.parse(localStorage.getItem('rules'));
+      if (rules) {
+        rules.forEach(function(rule) {
+          $('#ruleList').append('<li>' + rule.rule + ' (' + rule.relationship + ') <button class="btn btn-sm btn-danger deleteRule">Delete</button> <button class="btn btn-sm btn-primary editRule">Edit</button></li>');
+        });
+      }
+    }
+    function executeRules() {
+      $('#ruleList li').each(function() {
+        var ruleText = $(this).find('.ruleText').text().trim();
+        var relationship = $(this).find('.ruleRelationship').text().trim();
+
+        if (relationship === 'independent') {
+          console.log('Executing independent rule:', ruleText);
+        } else if (relationship === 'dependent') {
+          console.log('Executing dependent rule:', ruleText);
+        } else if (relationship === 'precedence') {
+          console.log('Executing precedence rule:', ruleText);
+        }
+      });
+    }
+    loadRulesFromLocalStorage();
+    $('#ruleForm').submit(function(event) {
+      event.preventDefault();
+      var rule = $('#ruleInput').val();
+      var relationship = $('#ruleRelationship').val();
+      if (rule.trim() !== '') {
+        $('#ruleList').append('<li><span class="ruleText">' + rule + '</span> (<span class="ruleRelationship">' + relationship + '</span>) <button class="btn btn-sm btn-danger deleteRule">Delete</button> <button class="btn btn-sm btn-primary editRule">Edit</button></li>');
+        $('#ruleInput').val('');
+        saveRulesToLocalStorage();
+      } else {
+        alert('Please enter a rule.');
+      }
+    });
+
+    $('#ruleList').on('click', '.deleteRule', function() {
+      $(this).parent().remove();
+      saveRulesToLocalStorage();
+    });
+    $('#ruleList').on('click', '.editRule', function() {
+      var ruleText = $(this).parent().find('.ruleText').text().trim();
+      var relationshipText = $(this).parent().find('.ruleRelationship').text().trim();
+      $('#ruleInput').val(ruleText);
+      $('#ruleRelationship').val(relationshipText);
+      $(this).parent().remove();
+      saveRulesToLocalStorage();
+    });
+    $('#executeRulesBtn').click(function() {
+      executeRules();
+    });
+    $('#loginBtn').click(function() {
+      alert('Simulated login functionality');
+      $(this).addClass('d-none');
+      $('#logoutBtn').removeClass('d-none');
+    });
+
+    $('#logoutBtn').click(function() {
+      alert('Simulated logout functionality');
+      $(this).addClass('d-none');
+      $('#loginBtn').removeClass('d-none');
+    });
+  });
+  </script>
+</body>
+</html>
